@@ -9,7 +9,7 @@
    * The listener for our browser action button click. This click is what kicks off the
    * creation of the playlist sorter page.
    */
-  chrome.browserAction.onClicked.addListener(() => {
-    chrome.tabs.create({ "url": chrome.extension.getURL("app.html") }, () => {})
+  chrome.action.onClicked.addListener(() => {
+    chrome.tabs.create({ "url": chrome.runtime.getURL("app.html") }, () => {})
   })
 }
