@@ -1,5 +1,15 @@
 # Playlist Sorter for YouTube
 
+**UPDATE: Oct 5, 2024**
+
+**This extension is no longer available in the Chrome extension store.**
+
+YouTube has revoked the Chrome extension's access to the YouTube API. YouTube audited the extension and required several changes that I am unable to, or will not, make (including changing the name of the extension and user interface to not use the word "YouTube"). I guess we'd have to call it "Playlist Sorter for That Really Popular Video Sharing Service". No thanks.
+
+I'll leave the code here for now, in case anyone wants to run it locally, or make their own attempt with YouTube's auditors.
+
+---
+
 If you’ve ever wanted to sort your playlist videos by name, then you’ve gotten used to disappointment, since YouTube doesn’t support that!
 
 I recently decided to host all my family videos on YouTube. I love to gather the kids around and watch their funny videos from 5 years ago! Having them on YouTube makes it really easy to stream or beam to the TV.
