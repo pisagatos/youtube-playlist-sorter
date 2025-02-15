@@ -2,3 +2,4 @@ src/client-id*
 extension.zip
 node_modules
 extension/*
+package*

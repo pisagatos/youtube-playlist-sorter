@@ -29,33 +29,24 @@ class LoginPanel extends React.Component {
   }
 
   render() {
-    let errorDiv = <div/>
+    let errorDiv = <div />
     if (this.state.loginError) {
       errorDiv =
-        <div class={this.state.loginError ? "" : "hidden" }>
+        <div class={this.state.loginError ? "" : "hidden"}>
           Login failed: {this.state.loginError}
         </div>
     }
 
-    return(
-      <div className="flex-container">
-        <div className="login">
-          <div className="row">
-            <div className="col-md-12">
-              <h1>Playlist Sorter for YouTube&trade;</h1>
-            </div>
-          </div>
-
-
-          <div className="row">
-            <div className="col-md-12 center-text">
-              <button className="btn btn-info login-button" onClick={this.handleLoginClicked}>Login with YouTube</button>
-            </div>
-          </div>
-
-          {errorDiv}
+    return (
+      <div class="px-4 py-5 my-5 text-center">
+      <h1 class="display-5 fw-bold text-body-emphasis">Playlist Sorter for YouTube&trade;</h1>
+      <div class="col-lg-6 mx-auto">
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onClick={this.handleLoginClicked}>Login with YouTube</button>
         </div>
       </div>
+      {errorDiv}
+    </div>
     )
   }
 
@@ -79,8 +70,8 @@ class LoginPanel extends React.Component {
 
     let width = 600
     let height = 600
-    let left = (screen.width/2) - (width/2)
-    let top = (screen.height/2) - (height/2)
+    let left = (screen.width / 2) - (width / 2)
+    let top = (screen.height / 2) - (height / 2)
 
     let options = {
       "url": authUrl,
@@ -91,7 +82,7 @@ class LoginPanel extends React.Component {
       "type": "popup"
     }
 
-    chrome.windows.create(options, () => {})
+    chrome.windows.create(options, () => { })
   }
 
   handleOauthCallback(url) {

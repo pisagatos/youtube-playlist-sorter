@@ -10,5 +10,5 @@ require("bootstrap")
 
 ReactDOM.render(
   <PlaylistSorter />,
-  document.getElementById("playlist-sorter")
+  document.getElementById("main")
 )

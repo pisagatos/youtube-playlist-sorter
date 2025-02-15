@@ -44,8 +44,8 @@ export default class PlaylistSorter extends React.Component {
 
 
   render() {
-    return(
-      <div className="playlist-sorter" style={{ width: this.state.width, height: this.state.height }}>
+    return (
+      <div class="container">
         {this.getHeader()}
         {this.getCurrentPanel()}
       </div>

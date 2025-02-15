@@ -1,5 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { update, isSort, findDuplicates } from "./functions"
+import { getPlaylistItems, sortPlaylistItems, shufflePlaylistItems, updatePercentComplete, updatePlaylistItems, updatePlaylistItem } from "./functions-playlist"
+import { handleUnsortedVideosClicked, handleSortClicked } from "./functions-playlist-bind"
 
 const PlaylistLink = (props) => {
   let itemCount = props.playlist.contentDetails.itemCount
