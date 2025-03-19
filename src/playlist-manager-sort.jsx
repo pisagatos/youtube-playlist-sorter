@@ -1,5 +1,16 @@
-// Función para ordenar la playlist
-export function handleSortClicked(options) {
+import React from "react"
+import PropTypes from "prop-types"
+
+class PlaylistManagerSort extends React.Component {
+
+  constructor(props, state) {
+    super(props)
+    this.props = props;
+    this.state = state;
+  }
+
+  // Función para ordenar la playlist
+  handleSortClicked(options) {
     let confirmation = confirm("Are you sure you want to sort the playlist? Spend a lot of quota API")
     if (confirmation) {
       this.props.onProgressStart("Sorting videos...")
@@ -32,7 +43,7 @@ export function handleSortClicked(options) {
   }
 
   // Función para ordenar los vídeos no ordenados de la playlist
-  export async function handleUnsortedVideosClicked() {
+  handleUnsortedVideosClicked() {
     this.props.onProgressStart("Sorting videos...");
 
     // 1. Lista de vídeos en la playlist
@@ -219,3 +230,16 @@ export function handleSortClicked(options) {
     
         console.log("Playlist ordenada con el mínimo de movimientos.");*/
   }
+}
+
+PlaylistManagerSort.propTypes = {
+  accessToken: PropTypes.string.isRequired,
+  playlist: PropTypes.object.isRequired,
+  itemCount: PropTypes.number.isRequired,
+  onProgressStart: PropTypes.func.isRequired,
+  onProgressStop: PropTypes.func.isRequired,
+  onBackToPlaylists: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
+}
+
+export default PlaylistManagerSort

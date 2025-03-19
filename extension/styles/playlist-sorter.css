@@ -1,3 +1,12 @@
+.card-title {
+  margin-bottom: 0px;
+}
+
+#actions-buttons {
+  display: none;
+}
+
+
 /*
 .playlist-sorter {
   margin: 20px;

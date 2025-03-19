@@ -1,7 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
-import PlaylistLink from "./playlist-link"
+import PlaylistComponent from "./playlist-component"
 import { orderBy } from "natural-orderby"
+const collator = new Intl.Collator("es", { sensitivity: "base" });
 
 class PlaylistPanel extends React.Component {
 
@@ -19,14 +20,15 @@ class PlaylistPanel extends React.Component {
   }
 
   render() {
-    const playlistLinks = this.state.playlists.map((playlist) =>
-      <PlaylistLink key={playlist.id} playlist={playlist} onPlaylistSelected={this.props.onPlaylistSelected} />
+    const PlaylistComponents = this.state.playlists.map((playlist) =>
+      <PlaylistComponent key={playlist.id} accessToken={this.props.accessToken} playlist={playlist} onPlaylistSelected={this.props.onPlaylistSelected} />
+
     )
 
-    return(
-      <div className="content-panel container">
-        <ul className="item-list">{playlistLinks}</ul>
-      </div>
+    return (
+      <div className="row row-cols-4">
+        {PlaylistComponents}
+      </div >
     )
   }
 
@@ -67,7 +69,7 @@ class PlaylistPanel extends React.Component {
         }
 
         response.json().then((data) => {
-          for(let playlist of data.items) {
+          for (let playlist of data.items) {
             playlists.push(playlist)
           }
 
@@ -84,7 +86,7 @@ class PlaylistPanel extends React.Component {
   }
 
   sortPlaylists(playlists) {
-    return orderBy(playlists, v => v.snippet.title)
+    return orderBy(playlists, v => v.snippet.title, collator.compare)
   }
 }
 

@@ -32,21 +32,21 @@ class LoginPanel extends React.Component {
     let errorDiv = <div />
     if (this.state.loginError) {
       errorDiv =
-        <div class={this.state.loginError ? "" : "hidden"}>
+        <div className={this.state.loginError ? "" : "hidden"}>
           Login failed: {this.state.loginError}
         </div>
     }
 
     return (
-      <div class="px-4 py-5 my-5 text-center">
-      <h1 class="display-5 fw-bold text-body-emphasis">Playlist Sorter for YouTube&trade;</h1>
-      <div class="col-lg-6 mx-auto">
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onClick={this.handleLoginClicked}>Login with YouTube</button>
+      <div className="px-4 py-5 my-5 text-center">
+        <h1 className="display-5 mb-3 fw-bold text-body-emphasis pb-4">Playlist Sorter for YouTube&trade;</h1>
+        <div className="col-lg-6 mx-auto">
+          <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <button type="button" className="btn btn-primary btn-lg px-4 gap-3" onClick={this.handleLoginClicked}>Login with YouTube</button>
+          </div>
         </div>
+        {errorDiv}
       </div>
-      {errorDiv}
-    </div>
     )
   }
 

@@ -3,9 +3,9 @@ import PropTypes from "prop-types"
 import CircularProgressbar from "react-circular-progressbar"
 import { compare, orderBy } from "natural-orderby"
 
-import { update, isSort, findDuplicates } from "./functions"
-import { getPlaylistItems, sortPlaylistItems, shufflePlaylistItems, updatePercentComplete, updatePlaylistItems, updatePlaylistItem } from "./functions-playlist"
-import { handleUnsortedVideosClicked, handleSortClicked } from "./functions-playlist-bind"
+import { update, isSort, findDuplicates } from "./playlist-manager"
+import { getPlaylistItems, sortPlaylistItems, shufflePlaylistItems, updatePercentComplete, updatePlaylistItems, updatePlaylistItem } from "./playlist-manager-fetch"
+import { handleUnsortedVideosClicked, handleSortClicked } from "./playlist-manager-sort"
 
 const collator = new Intl.Collator("es", { sensitivity: "base" });
 
@@ -79,7 +79,7 @@ class PlaylistDetailsPanel extends React.Component {
           <div>
             <a href="#" className="sort-link" title="Update changes's playlist" onClick={() => this.update()}>Update</a>
             <a href="#" className="sort-link" title="Figure out if the playlist is sorted" onClick={() => this.isSort()}>Is sort?</a>
-            <a href="#" className="sort-link" title="Find duplicates on playlist" onClick={() => this.findDuplicates()}>Find Duplicates</a>
+            <a href="#" className="sort-link" title="Find duplicates on playlist" onClick={() => this.findDuplicates()}>Find duplicates</a>
             <a href="#" className="sort-link" title="Remove deleted videos on playlist" onClick={() => this.removeDeletedVideos()}>Remove deleted videos</a>
           </div>
         </div>
@@ -105,8 +105,6 @@ class PlaylistDetailsPanel extends React.Component {
     )
   }
 
-
-
   getErrorMessage(data) {
     let error = data.error
 
@@ -114,8 +112,8 @@ class PlaylistDetailsPanel extends React.Component {
       if (error.errors && error.errors.length > 0) {
         if (error.errors[0].reason == "manualSortRequired") {
           let url = `https://www.youtube.com/playlist?list=${this.props.playlist.id}`
-          let playlistLink = `<a href="${url}" target="_blank">here</a>`
-          return `You must first change the playlist to manual ordering by dragging a video to a different position ${playlistLink}.`
+          let PlaylistComponent = `<a href="${url}" target="_blank">here</a>`
+          return `You must first change the playlist to manual ordering by dragging a video to a different position ${PlaylistComponent}.`
         }
       }
 

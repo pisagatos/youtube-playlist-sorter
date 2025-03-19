@@ -8,13 +8,14 @@
   "private": true,
   "scripts": {
     "lint": "eslint src/*.js src/*.jsx",
-    "build": "npm run build:bundle && npm run build:background && npm run copy-css",
+    "build": "npm run build:bundle && npm run build:background && npm run copy-css && npm run copy-css-icons",
     "build:bundle": "browserify src/app.js --extension=.jsx -o extension/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
     "build:background": "browserify src/background.js -o extension/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
     "watch": "npm run watch:bundle & npm run watch:background",
     "watch:bundle": "watchify src/app.js --extension=.jsx -o extension/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
     "watch:background": "watchify src/background.js -o extension/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
-    "copy-css": "cp node_modules/bootstrap/dist/css/bootstrap*.min.css extension/styles"
+    "copy-css": "cp node_modules/bootstrap/dist/css/bootstrap*.min.css extension/styles",
+    "copy-css-icons": "cp node_modules/bootstrap-icons/font/bootstrap*-icons.min.css extension/styles"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
@@ -33,6 +34,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "grunt-cli": "^1.5.0",
     "jquery": "^3.7.1",
     "natural-orderby": "^5.0.0",

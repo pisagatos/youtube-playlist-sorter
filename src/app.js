@@ -1,5 +1,5 @@
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from 'react-dom/client';
 import PlaylistSorter from "./playlist-sorter"
 
 // Bootstrap needs jquery:
@@ -8,7 +8,5 @@ import $ from "jquery"
 window.jQuery = window.$ = $
 require("bootstrap")
 
-ReactDOM.render(
-  <PlaylistSorter />,
-  document.getElementById("main")
-)
+const root = createRoot(document.getElementById("main"));
+root.render(<PlaylistSorter />);

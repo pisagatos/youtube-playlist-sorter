@@ -3,6 +3,9 @@ import LoginPanel from "./login-panel"
 import Header from "./header"
 import PlaylistPanel from "./playlist-panel"
 import PlaylistDetailsPanel from "./playlist-details-panel"
+import PlaylistManager from "./playlist-manager"
+import PlaylistManagerSort from "./playlist-manager-sort"
+import PlaylistManagerFetch from "./playlist-manager-fetch"
 
 const loginPanelId = "login"
 const playlistPanelId = "playlist"
@@ -19,7 +22,6 @@ export default class PlaylistSorter extends React.Component {
     this.handleProgressStop = this.handleProgressStop.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
     this.handleError = this.handleError.bind(this)
-    this.handleResize = this.handleResize.bind(this)
 
     this.state = {
       accessToken: null,
@@ -27,25 +29,21 @@ export default class PlaylistSorter extends React.Component {
       currentPlaylist: null,
       currentPlaylistItemCount: 0,
       loginError: null,
-      progressMessage: null,
-      width: 0,
-      height: 0
+      progressMessage: null
     }
   }
 
   componentDidMount() {
-    this.handleResize()
-    window.addEventListener("resize", this.handleResize)
+    
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize)
+    
   }
-
 
   render() {
     return (
-      <div class="container">
+      <div className="container">
         {this.getHeader()}
         {this.getCurrentPanel()}
       </div>
@@ -100,13 +98,6 @@ export default class PlaylistSorter extends React.Component {
   handleError(message) {
     this.setState({
       errorMessage: message
-    })
-  }
-
-  handleResize() {
-    this.setState({
-      width: window.innerWidth,
-      height: window.innerHeight
     })
   }
 
