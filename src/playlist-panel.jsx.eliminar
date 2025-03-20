@@ -1,0 +1,133 @@
+import React from "react"
+import PropTypes from "prop-types"
+import PlaylistComponent from "./playlist-component"
+import { orderBy } from "natural-orderby"
+import ModalComponent from "./playlist-modal.jsx";
+import $ from "jquery"
+const collator = new Intl.Collator("es", { sensitivity: "base" });
+
+class PlaylistPanel extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      playlists: []
+    }
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  
+  }
+
+  componentDidMount() {
+    this.props.onProgressStart("Loading playlists...")
+    this.loadPlaylists()
+
+    // Función para filtrar las playlists. Hay que hacerlo aquí sino no funciona.
+    $(function () {
+      function removeAccents(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      }
+
+      $("#filter").on("keyup", function () {
+        var value = removeAccents($(this).val().toLowerCase());
+
+        $(".containerCard").filter(function () {
+          return removeAccents($(this).find(".card .card-title").text().toLowerCase()).indexOf(value.toLowerCase()) === -1;
+        }).hide();
+
+        $(".containerCard").filter(function () {
+          return removeAccents($(this).find(".card .card-title").text().toLowerCase()).indexOf(value.toLowerCase()) > -1;
+        }).show();
+      });
+    });
+  }
+
+  render() {
+    const PlaylistComponents = this.state.playlists.map((playlist) =>
+      <PlaylistComponent key={playlist.id} accessToken={this.props.accessToken} playlist={playlist} onPlaylistSelected={this.props.onPlaylistSelected} />
+
+    )
+
+    return (
+      <>
+        <div className="row">
+          <div className="col mb-3">
+            <input className="form-control" id="filter" type="text" placeholder="Search..." />
+          </div>
+        </div>
+        <div className="row row-cols-4">
+          {PlaylistComponents}
+        </div >
+      </>
+    )
+  }
+
+  loadPlaylists() {
+    let playlists = []
+
+    this.getPlaylists(null, playlists, (error) => {
+      if (error) {
+        this.props.onError(`Error retrieving playlists: ${error}`)
+      } else {
+        this.setState({
+          playlists: this.sortPlaylists(playlists)
+        })
+
+        this.props.onProgressStop()
+      }
+    })
+  }
+
+  getPlaylists(pageToken, playlists, callback) {
+    let url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true"
+
+    if (pageToken) {
+      url += "&pageToken=" + pageToken
+    }
+
+    let options = {
+      headers: {
+        "Authorization": "Bearer " + this.props.accessToken
+      }
+    }
+
+    fetch(url, options)
+      .then((response) => {
+        if (response.status != 200) {
+          callback("Error retrieving playlists: " + response.status)
+          return
+        }
+
+        response.json().then((data) => {
+          for (let playlist of data.items) {
+            playlists.push(playlist)
+          }
+
+          if (data.nextPageToken) {
+            this.getPlaylists(data.nextPageToken, playlists, callback)
+          } else {
+            callback()
+          }
+        })
+      })
+      .catch((error) => {
+        callback(error)
+      })
+  }
+
+  sortPlaylists(playlists) {
+    return orderBy(playlists, v => v.snippet.title, collator.compare)
+  }
+}
+
+PlaylistPanel.propTypes = {
+  accessToken: PropTypes.string.isRequired,
+  onProgressStart: PropTypes.func.isRequired,
+  onProgressStop: PropTypes.func.isRequired,
+  onPlaylistSelected: PropTypes.func.isRequired,
+  onError: PropTypes.func.isRequired
+}
+
+export default PlaylistPanel

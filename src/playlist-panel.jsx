@@ -1,101 +1,109 @@
-import React from "react"
-import PropTypes from "prop-types"
-import PlaylistComponent from "./playlist-component"
-import { orderBy } from "natural-orderby"
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import PlaylistComponent from "./playlist-component";
+import { orderBy } from "natural-orderby";
+import ModalComponent from "./playlist-modal.jsx";
+
 const collator = new Intl.Collator("es", { sensitivity: "base" });
 
-class PlaylistPanel extends React.Component {
+const PlaylistPanel = ({ accessToken, onProgressStart, onProgressStop, onPlaylistSelected, onError }) => {
+    const [playlists, setPlaylists] = useState([]);
+    const [filter, setFilter] = useState("");
 
-  constructor(props) {
-    super(props)
+    const [showModal, setShowModal] = useState(false);
+    const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
-    this.state = {
-      playlists: []
-    }
-  }
+    useEffect(() => {
+        onProgressStart("Loading playlists...");
+        loadPlaylists();
+    }, []);
 
-  componentDidMount() {
-    this.props.onProgressStart("Loading playlists...")
-    this.loadPlaylists()
-  }
+    const handleOpenModal = (playlist) => {
+        setSelectedPlaylist(playlist);
+        setShowModal(true);
+    };
 
-  render() {
-    const PlaylistComponents = this.state.playlists.map((playlist) =>
-      <PlaylistComponent key={playlist.id} accessToken={this.props.accessToken} playlist={playlist} onPlaylistSelected={this.props.onPlaylistSelected} />
+    const loadPlaylists = async () => {
+        try {
+            let playlists = [];
+            await getPlaylists(null, playlists);
+            setPlaylists(sortPlaylists(playlists));
+            onProgressStop();
+        } catch (error) {
+            onError(`Error retrieving playlists: ${error}`);
+        }
+    };
 
-    )
+    const getPlaylists = async (pageToken, playlists) => {
+        let url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true";
+        if (pageToken) url += "&pageToken=" + pageToken;
+
+        const options = {
+            headers: { "Authorization": "Bearer " + accessToken }
+        };
+
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(response.status);
+
+        const data = await response.json();
+        playlists.push(...data.items);
+
+        if (data.nextPageToken) {
+            await getPlaylists(data.nextPageToken, playlists);
+        }
+    };
+
+    const sortPlaylists = (playlists) => orderBy(playlists, v => v.snippet.title, collator.compare);
+
+    const handleFilterChange = (event) => setFilter(event.target.value.toLowerCase());
+
+    const filteredPlaylists = playlists.filter((playlist) =>
+        playlist.snippet.title.toLowerCase().includes(filter)
+    );
 
     return (
-      <div className="row row-cols-4">
-        {PlaylistComponents}
-      </div >
-    )
-  }
+        <>
+            <div className="row">
+                <div className="col mb-3">
+                    <input
+                        className="form-control"
+                        type="text"
+                        placeholder="Search..."
+                        value={filter}
+                        onChange={handleFilterChange}
+                    />
+                </div>
+            </div>
+            <div className="row row-cols-4">
+                {filteredPlaylists.map((playlist) => (
+                    <PlaylistComponent
+                        key={playlist.id}
+                        accessToken={accessToken}
+                        playlist={playlist}
+                        onPlaylistSelected={onPlaylistSelected}
+                        onOpenModal={handleOpenModal}
+                    />
+                ))}
+            </div>
+            {showModal && selectedPlaylist && (
+                <ModalComponent
+                    show={showModal}
+                    onClose={() => setShowModal(false)}
+                    title={playlist.snippet.title}
+                    items={getPlaylist(playlist.id)}
+                />
+            )}
 
-  loadPlaylists() {
-    let playlists = []
-
-    this.getPlaylists(null, playlists, (error) => {
-      if (error) {
-        this.props.onError(`Error retrieving playlists: ${error}`)
-      } else {
-        this.setState({
-          playlists: this.sortPlaylists(playlists)
-        })
-
-        this.props.onProgressStop()
-      }
-    })
-  }
-
-  getPlaylists(pageToken, playlists, callback) {
-    let url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true"
-
-    if (pageToken) {
-      url += "&pageToken=" + pageToken
-    }
-
-    let options = {
-      headers: {
-        "Authorization": "Bearer " + this.props.accessToken
-      }
-    }
-
-    fetch(url, options)
-      .then((response) => {
-        if (response.status != 200) {
-          callback("Error retrieving playlists: " + response.status)
-          return
-        }
-
-        response.json().then((data) => {
-          for (let playlist of data.items) {
-            playlists.push(playlist)
-          }
-
-          if (data.nextPageToken) {
-            this.getPlaylists(data.nextPageToken, playlists, callback)
-          } else {
-            callback()
-          }
-        })
-      })
-      .catch((error) => {
-        callback(error)
-      })
-  }
-
-  sortPlaylists(playlists) {
-    return orderBy(playlists, v => v.snippet.title, collator.compare)
-  }
-}
+        </>
+    );
+};
 
 PlaylistPanel.propTypes = {
-  accessToken: PropTypes.string.isRequired,
-  onProgressStart: PropTypes.func.isRequired,
-  onProgressStop: PropTypes.func.isRequired,
-  onPlaylistSelected: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired
-}
+    accessToken: PropTypes.string.isRequired,
+    onProgressStart: PropTypes.func.isRequired,
+    onProgressStop: PropTypes.func.isRequired,
+    onPlaylistSelected: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired
+};
 
-export default PlaylistPanel
+export default PlaylistPanel;

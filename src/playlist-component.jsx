@@ -4,8 +4,9 @@ import { update, isSort, findDuplicates, removeDeletedVideos } from "./playlist-
 import { setAccessToken, loadPlaylistItems, getPlaylistItems, sortPlaylistItems, shufflePlaylistItems } from "./playlist-manager-fetch.jsx";
 import { handleUnsortedVideosClicked, handleSortClicked } from "./playlist-manager-sort.jsx";
 import { usePlaylist, addPlaylist } from './playlist-array.jsx';
+import ModalComponent from "./playlist-modal.jsx";
 
-const PlaylistComponent = ({ playlist, accessToken }) => {
+const PlaylistComponent = ({ playlist, accessToken, onOpenModal }) => {
   const [buttonsVisible, setButtonsVisible] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
 
@@ -65,18 +66,20 @@ const PlaylistComponent = ({ playlist, accessToken }) => {
   };
 
   return (
-    <div className="col">
+    <div className="col containerCard mb-3">
       <div className="card h-100">
         <img src={playlist.snippet.thumbnails.default.url} className="card-img-top" alt={playlist.snippet.title} />
         <div className="card-body">
           <h5 className="card-title">{playlist.snippet.title}</h5>
           <p className="card-text">{videoCountText}</p>
+        </div>
+        <div className="card-footer">
           <div className="btn-toolbar" role="toolbar" aria-label="Toolbar actions">
             {!downloaded && (
               <div className="btn-group actions-buttons" role="group" aria-label="Playlist actions">
                 <button
                   type="button"
-                  className="btn btn-secondary btn-sm me-2"
+                  className="btn btn-secondary btn-sm"
                   title="Download playlist"
                   onClick={download}
                 >
@@ -86,17 +89,17 @@ const PlaylistComponent = ({ playlist, accessToken }) => {
             )}
             {buttonsVisible && (
               <>
-                <div className="btn-group actions-buttons me-2" role="group" aria-label="Playlist actions">
+                <div className="btn-group actions-buttons me-1" role="group" aria-label="Playlist actions">
                   <button
                     type="button"
                     className="btn btn-secondary btn-sm"
                     title="View playlist"
-                    onClick={handleUnsortedVideosClicked}
+                    onClick={() => onOpenModal(playlist)}
                   >
                     <i className="bi bi-eye"></i>
                   </button>
                 </div>
-                <div className="btn-group actions-buttons me-2" role="group" aria-label="Playlist actions">
+                <div className="btn-group actions-buttons me-1" role="group" aria-label="Playlist actions">
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
@@ -130,18 +133,18 @@ const PlaylistComponent = ({ playlist, accessToken }) => {
                     <i className="bi bi-trash"></i>
                   </button>
                 </div>
-                <div className="btn-group actions-buttons me-2" role="group" aria-label="Sort actions">
+                <div className="btn-group actions-buttons me-1" role="group" aria-label="Sort actions">
                   <button
                     type="button"
                     className="btn btn-success btn-sm"
-                    title="Sort unsorted playlist"
+                    title="Sort only unsorted playlist"
                     onClick={handleUnsortedVideosClicked}
                   >
                     <i className="bi bi-sort-down-alt"></i>
                   </button>
                   <button
                     type="button"
-                    className="btn btn-success btn-sm"
+                    className="btn btn-danger btn-sm"
                     title="Sort entire playlist"
                     onClick={() => handleSortClicked({ descending: false })}
                   >
