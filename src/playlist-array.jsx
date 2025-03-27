@@ -10,7 +10,14 @@ export const getPlaylist = (id) => {
   return playlists[id] || null;
 };
 
+// Función para eliminar una playlist por su ID
+export const deletePlaylist = (id) => {
+  delete playlists[id];
+};
+
 // Función para obtener todas las playlists
 export const getAllPlaylists = () => {
   return playlists;
 };
+
+

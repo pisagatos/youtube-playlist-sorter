@@ -8,7 +8,7 @@ export const loadPlaylistItems = async (playlistId, onError, onProgressStop) => 
   try {
     let playlistItems = [];
     await getPlaylistItems(null, playlistId, playlistItems);
-    //onProgressStop();
+
     return playlistItems;
   } catch (error) {
     console.log(`Error retrieving playlist details: ${error}`);
@@ -59,16 +59,6 @@ export const getPlaylistItems = async (pageToken, playlistId, playlistItems) => 
     console.error("Error retrieving playlist items:", error);
     throw error;    
   }
-};
-
-export const sortPlaylistItems = (playlistItems, isDescending) => {
-  return [...playlistItems].sort((a, b) =>
-    isDescending ? b.snippet.title.localeCompare(a.snippet.title) : a.snippet.title.localeCompare(b.snippet.title)
-  );
-};
-
-export const shufflePlaylistItems = (playlistItems) => {
-  return playlistItems.sort(() => Math.random() - 0.5);
 };
 
 export const updatePlaylistItem = async (playlistItem) => {

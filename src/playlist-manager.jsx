@@ -1,174 +1,160 @@
-import React from "react"
-import PropTypes from "prop-types"
+import React, { useState, useCallback } from "react";
+import PropTypes from "prop-types";
 
-// Fichero de funciones compartidas entre componentes
-class PlaylistManager extends React.Component {
+// const [playlistItems, setPlaylistItems] = useState(playlist.items || []);
 
-    constructor(props, state) {
-        super(props)
-        this.props = props;
-        this.state = state;
-        this.download = this.download.bind(this);
-        this.update = this.update.bind(this);
-        this.isSort = this.isSort.bind(this);
-        this.findDuplicates = this.findDuplicates.bind(this);
-        this.removeDeletedVideos = this.removeDeletedVideos.bind(this);
+const sortPlaylistItems = (playlistItems, isDescending) => {
+
+  const collator = new Intl.Collator("es", { sensitivity: "base" });
+
+  return [...playlistItems].sort((a, b) =>
+    isDescending ? collator.compare(b.snippet.title, a.snippet.title)
+      : collator.compare(a.snippet.title, b.snippet.title)
+  );
+
+};
+
+const shufflePlaylistItems = (playlistItems) => {
+  return playlistItems.sort(() => Math.random() - 0.5);
+};
+
+// Comprobar si la playlist está ordenada
+export const isSort = (playlist) => {
+  console.log("Comparing playlist...");
+
+  let sortedPlaylist = sortPlaylistItems([...playlist], false);
+  let isSorted = playlist.every((item, i) => item.snippet.title === sortedPlaylist[i].snippet.title);
+
+  if (isSorted) {
+    console.log("Playlist is sorted correctly.");
+  } else {
+    console.log("Playlist is NOT sorted correctly.");
+  }
+
+  return isSorted;
+};
+
+/*
+// Buscar duplicados en la playlist
+export const findDuplicates = () => {
+  onProgressStart("Finding duplicates...");
+  let duplicates = {};
+
+  playlistItems.forEach((video) => {
+    let title = video.snippet.title.toLowerCase();
+    if (duplicates[title]) {
+      duplicates[title].push(video.snippet.title);
+    } else {
+      duplicates[title] = [video.snippet.title];
+    }
+  });
+
+  let duplicateTitles = Object.values(duplicates).filter(v => v.length > 1).flat();
+  onError(duplicateTitles.length > 0 ? "Duplicates found: " + duplicateTitles.join(", ") : "No duplicates found.");
+  onProgressStop();
+};
+*/
+
+/*
+// Eliminar vídeos eliminados de la playlist
+export const removeDeletedVideos = () => {
+  onProgressStart("Removing deleted videos...");
+  let deletedVideos = playlistItems.filter(video => video.snippet.title === "Deleted video" || video.snippet.title === "Private video");
+
+  if (deletedVideos.length > 0) {
+    deletePlaylistItems(deletedVideos)
+      .catch((error) => onError(error.message))
+      .finally(() => {
+        onProgressStop();
+        update();
+      });
+  } else {
+    onError("No deleted videos found.");
+    onProgressStop();
+  }
+};
+*/
+
+export const removeDeletedAndDuplicatesVideos = (playlist) => {
+  console.log("Removing deleted and duplicates videos...");
+
+  let selectedVideos = {};
+  let duplicatesVideos = {};
+  let repeatedTitles = {};
+  let deletedVideos = {};
+
+  playlist.forEach((video) => {
+    let title = video.snippet.title.toLowerCase();
+
+    // hacemos la comparación en minúsculas
+    if (title === "deleted video" || title === "private video") {
+      deletedVideos.push(video);
     }
 
-    // Download playlist items
-    download(id) {
-        this.props.onProgressStart("Download playlist...")
-
-        return new Promise((resolve, reject) => {
-            this.loadPlaylistItems().then(() => {
-                this.props.onProgressStop();
-                this.render();
-                resolve();
-            }).catch(reject);
-        });
+    if (duplicatesVideos[title]) {
+      duplicatesVideos[title].push(title);
+    } else {
+      duplicatesVideos[title] = [title];
     }
+  });
 
-    // Update playlist items
-    update() {
-        this.props.onProgressStart("Updating playlist...")
-        this.loadPlaylistItems().then(() => {
-            this.props.onProgressStop();
-            this.render();
-        })
-    }
+  repeatedTitles = Object.keys(duplicatesVideos).filter(title => duplicatesVideos[title].length > 1);
 
-    // Comprobar si la playlist está ordenada
-    isSort() {
-        this.props.onProgressStart("Comparing playlist...");
+  // Unimos el array de duplicatesVideos y deletedVideos y lo guardamos en selectedVideos
+  selectedVideos = { ...deletedVideos, ...repeatedTitles };
+  console.log("Selected videos:", selectedVideos);
 
-        let playlist = Array.from(this.state.playlistItems);
-        let sortedPlaylist = this.sortPlaylistItems(playlist, false);
-        let isSorted = true;
-
-        for (let i = 0; i < playlist.length; i++) {
-            if (playlist[i].snippet.title != sortedPlaylist[i].snippet.title) {
-                isSorted = false;
-                break;
-            }
-        }
-
-        if (isSorted) {
-            this.props.onError("Playlist is sorted correctly.");
-        } else {
-            this.props.onError("Playlist is NOT sorted correctly.");
-        }
-
-        this.props.onProgressStop();
-    }
-
-    // Find duplicates
-    findDuplicates() {
-        this.props.onProgressStart("Finding duplicates...");
-
-        let playlist = Array.from(this.state.playlistItems);
-        let isSorted = true;
-        let duplicatesRealTitle = [];
-
-        var duplicates = playlist.map(function (video) {
-            return {
-                title: video.snippet.title.toLowerCase(),
-                titleReal: video.snippet.title,
-                id: video.snippet.resourceId.videoId
-            };
-        }).reduce(function (acc, video, i, array) {
-            // Verificar si el título está duplicado en el array
-            if (array.some((v, index) => v.title === video.title && index !== i) &&
-                !acc.includes(video.title)) {
-                acc.push(video.title); // Agregar el título en minúsculas si es duplicado y no está en la lista
-                duplicatesRealTitle.push(video.titleReal); // Agregar el título real correspondiente
-            }
-
-            return acc; // Devolver el acumulador
-        }, []);
-
-        if (duplicates.length > 0) {
-            this.props.onError("Duplicates found: " + '<br>' + duplicatesRealTitle.join(",<br> "));
-            console.log("Duplicates found: " + duplicatesRealTitle.join(" ||| "));
-        } else {
-            this.props.onError("No duplicates found.");
-        }
-
-        this.props.onProgressStop();
-    }
-
-    // Eliminar vídeos eliminados de la playlist
-    removeDeletedVideos() {
-        this.props.onProgressStart("Removing deleted videos...");
-
-        let playlist = Array.from(this.state.playlistItems);
-        let deletedVideos = playlist.filter(video => (video.snippet.title == "Deleted video" && video.snippet.description == "This video is unavailable.") || video.snippet.title == "Private video");
-
-        if (deletedVideos.length > 0) {
-            this.deletePlaylistItems(Array.from(deletedVideos)).then(() => {
-            }).catch((error) => {
-                this.props.onError(error.message)
-            }).then(() => {
-                this.props.onProgressStop()
-                this.setState({
-                    percentComplete: 100,
-                    currentlySortingVideoTitle: ""
-                });
-
-                this.update();
-
-            });
-        } else {
-            this.props.onError("No deleted videos found.");
-        }
-
-        this.props.onProgressStop();
-    }
-
-    // Función para calcular la Longest Increasing Subsequence (LIS) de una secuencia de índices con Binary Search + Patience Sorting
-    computeLISIndices(sequence) {
-        const n = sequence.length;
-        const dp = new Array(n).fill(1);    // dp[i]: longitud de la LIS que termina en i
-        const prev = new Array(n).fill(-1);   // Para reconstruir la secuencia
-        let maxLen = 0;
-        let maxIndex = 0;
-
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < i; j++) {
-                if (sequence[j] < sequence[i] && dp[j] + 1 > dp[i]) {
-                    dp[i] = dp[j] + 1;
-                    prev[i] = j;
-                }
-            }
-            if (dp[i] > maxLen) {
-                maxLen = dp[i];
-                maxIndex = i;
-            }
-        }
-
-        // Reconstruir la LIS (en términos de índices en la secuencia original)
-        const lisIndices = [];
-        let i = maxIndex;
-        while (i !== -1) {
-            lisIndices.push(i);
-            i = prev[i];
-        }
-        lisIndices.reverse();
-        return { lisIndices, length: maxLen };
-    }
+  if (selectedVideos.length > 0) {
+    deletePlaylistItems(selectedVideos)
+      .catch((error) =>
+        onError(error.message))
+      .finally(() => {
+        console.log("Deleted and duplicates videos removed successfully.");
+        return true;
+      });
+  }
 }
 
-PlaylistManager.propTypes = {
-    accessToken: PropTypes.string.isRequired,
-    playlist: PropTypes.object.isRequired,
-    itemCount: PropTypes.number.isRequired,
-    onProgressStart: PropTypes.func.isRequired,
-    onProgressStop: PropTypes.func.isRequired,
-    onBackToPlaylists: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired
-}
+// Función para ordenar los vídeos no ordenados de la playlist
+export const handleUnsortedVideosClicked = (playlist) => {
+  console.log("Sorting videos...");
 
-// Exporta la clase por defecto
-export default PlaylistManager;
+  let sortedPlaylist = sortPlaylistItems([...playlist], false);
+  let moves = computeMinimalMoves(playlist, sortedPlaylist);
 
-// Exportar las funciones para uso nombrado
-export { PlaylistManager };
+  if (moves.length > 0) {
+    updatePlaylistItems(moves.map(move => move.video))
+      .then(() => setPlaylistItems(sortedPlaylist))
+      .catch((error) => onError(error.message))
+      .finally(() => {
+        console.log("Videos sorted successfully.");
+      });
+  }
+};
+
+// Función para ordenar TODA la playlist (Gasta mucha cuota de API)
+export const handleSortClicked = (playlist, options) => {
+  let confirmation = confirm("Are you sure you want to sort the playlist? Spend a lot of quota API");
+  if (!confirmation) 
+    return;
+
+  console.log("Sorting videos...");
+
+  let itemsCopy = [...playlist];
+  if (options.shuffle) {
+    itemsCopy = shufflePlaylistItems(itemsCopy);
+  } else {
+    itemsCopy = sortPlaylistItems(itemsCopy, options.descending);
+  }
+
+  itemsCopy.forEach((item, index) => {
+    item.snippet.position = index;
+  });
+
+  /*updatePlaylistItems(itemsCopy)
+    .then(() => setPlaylistItems(itemsCopy))
+    .catch((error) => onError(error.message))
+    .finally(() => {
+    
+    });*/
+};
