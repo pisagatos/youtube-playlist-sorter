@@ -1,6 +1,6 @@
 {
-  "name": "youtube-playlist-sorter",
-  "description": "Sort YouTube playlists",
+  "name": "youtube-tools",
+  "description": "YouTube Tools",
   "repository": {
     "type": "git"
   },
@@ -9,13 +9,13 @@
   "scripts": {
     "lint": "eslint src/*.js src/*.jsx",
     "build": "npm run build:bundle && npm run build:background && npm run copy-css && npm run copy-css-icons",
-    "build:bundle": "browserify src/app.js --extension=.jsx -o extension/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
-    "build:background": "browserify src/background.js -o extension/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
+    "build:bundle": "browserify src/app.js --extension=.jsx -o app/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
+    "build:background": "browserify src/background.js -o app/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
     "watch": "npm run watch:bundle & npm run watch:background",
-    "watch:bundle": "watchify src/app.js --extension=.jsx -o extension/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
-    "watch:background": "watchify src/background.js -o extension/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
-    "copy-css": "cp node_modules/bootstrap/dist/css/bootstrap*.min.css extension/styles",
-    "copy-css-icons": "cp node_modules/bootstrap-icons/font/bootstrap*-icons.min.css extension/styles",
+    "watch:bundle": "watchify src/app.js --extension=.jsx -o app/bundle.js -d -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
+    "watch:background": "watchify src/background.js -o app/background.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]",
+    "copy-css": "cp node_modules/bootstrap/dist/css/bootstrap*.min.css app/styles",
+    "copy-css-icons": "cp node_modules/bootstrap-icons/font/bootstrap*-icons.min.css app/styles",
     "start": "webpack serve --mode development --open"
   },
   "devDependencies": {
@@ -47,6 +47,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-circular-progressbar": "^2.1.0",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router": "^7.4.0"
   }
 }

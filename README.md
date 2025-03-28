@@ -1,10 +1,10 @@
-# Playlist Sorter for YouTube
+# YouTube Tools for YouTube
 
-**UPDATE: Oct 5, 2024**
+**UPDATE: March 27, 2025**
 
 **This extension is no longer available in the Chrome extension store.**
 
-YouTube has revoked the Chrome extension's access to the YouTube API. YouTube audited the extension and required several changes that I am unable to, or will not, make (including changing the name of the extension and user interface to not use the word "YouTube"). I guess we'd have to call it "Playlist Sorter for That Really Popular Video Sharing Service". No thanks.
+YouTube has revoked the Chrome extension's access to the YouTube API. YouTube audited the extension and required several changes that I am unable to, or will not, make (including changing the name of the extension and user interface to not use the word "YouTube"). I guess we'd have to call it "YouTube Tools for That Really Popular Video Sharing Service". No thanks.
 
 I'll leave the code here for now, in case anyone wants to run it locally, or make their own attempt with YouTube's auditors.
 
@@ -29,7 +29,7 @@ To make YouTube work for me, I needed to be able to order by video name. This ex
 ## Using it
 
 - Create one or more playlists with some videos in your YouTube account
-- Click the Playlist Sorter icon in the Chrome extension toolbar area
+- Click the YouTube Tools icon in the Chrome extension toolbar area
 - Login with your YouTube credentials
 - You playlists will be displayed
 - Click a playlist
@@ -64,8 +64,8 @@ export default clientId
 After making changes, you'll need to:
 
 1. Monitor the `npm run watch` output in the terminal to be sure your changes built cleanly
-2. Click the reload icon for the extension in chrome://extensions. This will close the Playlist Sorter page.
-3. Click the Playlist Sorter icon in the Chrome extension toolbar area to reopen it
+2. Click the reload icon for the extension in chrome://extensions. This will close the YouTube Tools page.
+3. Click the YouTube Tools icon in the Chrome extension toolbar area to reopen it
 
 ### Extension code
 
@@ -80,7 +80,7 @@ The extension code is found in the `src` directory.
 
 ### Debugging
 
-Open devtools on the Playlist Sorter app tab.
+Open devtools on the YouTube Tools app tab.
 
 ### Building a new version
 

@@ -1,5 +1,3 @@
-src/client-id*
-extension.zip
-node_modules
-extension/*
+src/client-id/
+node_modules/
 package*
