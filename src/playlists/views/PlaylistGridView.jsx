@@ -1,5 +1,5 @@
 import React from "react";
-import PlaylistActionsButtons from "../components/ps-actions-buttons.jsx";
+import PlaylistActionsButtons from "../components/ActionsButtons";
 
 
 export const PlaylistGridView = ({ playlist, videoCountText, onOpenModal}) => {

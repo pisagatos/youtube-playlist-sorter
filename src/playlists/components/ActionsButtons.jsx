@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
-import { isSort, removeDeletedAndDuplicatesVideos, handleUnsortedVideosClicked, handleSortClicked } from "../utils/ps-manager.jsx";
-import { loadPlaylistItems } from "./ps-manager-fetch.jsx";
-import { addPlaylist, getPlaylist, deletePlaylist } from '../utils/ps-array.js';
+import { isSort, removeDeletedAndDuplicatesVideos, handleUnsortedVideosClicked, handleSortClicked } from "../utils/Manager.jsx";
+import { loadPlaylistItems } from "../../fetch/FetchData.jsx";
+import { addPlaylist, getPlaylist, deletePlaylist } from '../utils/PlayListArray.js';
 
-const PlaylistActionsButtons = ({ playlist, onOpenModal }) => {
+const ActionsButtons = ({ playlist, onOpenModal }) => {
     const [buttonsVisible, setButtonsVisible] = useState(false); // Mostrar o no los botones de acciones
     const [downloaded, setDownloaded] = useState(false); // Indica si la playlist ha sido descargada
     const [loading, setLoading] = useState(false); // Mostrar o no el botón de loading
@@ -172,8 +172,8 @@ const PlaylistActionsButtons = ({ playlist, onOpenModal }) => {
     );
 }
 
-PlaylistActionsButtons.propTypes = {
+ActionsButtons.propTypes = {
     playlist: PropTypes.object.isRequired,
 };
 
-export default PlaylistActionsButtons;
+export default ActionsButtons;

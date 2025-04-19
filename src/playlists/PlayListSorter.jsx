@@ -3,13 +3,12 @@ import PropTypes from "prop-types";
 
 import { orderBy } from "natural-orderby";
 
-import { getPlaylist } from './playlist-array.jsx';
-import ModalComponent from "./components/ps-modal.jsx";
-import { setAccessToken } from "./ps-manager-fetch.jsx";
-import { PlaylistGridView } from "./playlist-grid-view.jsx";
-import { PlaylistListView } from "./playlist-list-view.jsx";
+import { getPlaylist } from './utils/PlayListArray.js';
+import Modal from "./components/Modal.jsx";
+import { PlaylistGridView } from "./views/PlaylistGridView.jsx";
+import { PlaylistListView } from "./views/PlaylistListView.jsx";
 
-const PlaylistPanel = ({ accessToken, onProgressStart, onProgressStop, onPlaylistSelected, onError }) => {
+const PlayListSorter = () => {
 
     const [buttonsVisible, setButtonsVisible] = useState(false);
     const [downloaded, setDownloaded] = useState(false);
@@ -29,14 +28,9 @@ const PlaylistPanel = ({ accessToken, onProgressStart, onProgressStop, onPlaylis
         return `${itemCount} ${itemCount === 1 ? "video" : "videos"}`;
     };
 
-    {/* Se ejecuta al montar el componente y cambia el accessToken globalmente */ }
-    useEffect(() => {
-        setAccessToken(accessToken);
-    }, [accessToken]);
-
     {/* Se ejecuta al montar el componente y carga las playlists */ }
     useEffect(() => {
-        onProgressStart("Loading playlists...");
+        //onProgressStart("Loading playlists...");
         loadPlaylists();
     }, []);
 
@@ -52,15 +46,18 @@ const PlaylistPanel = ({ accessToken, onProgressStart, onProgressStop, onPlaylis
             let playlists = [];
             await getPlaylists(null, playlists);
             setPlaylists(sortPlaylists(playlists));
-            onProgressStop();
+            //onProgressStop();
         } catch (error) {
-            onError(`Error retrieving playlists: ${error}`);
+            //onError(`Error retrieving playlists: ${error}`);
         }
     };
 
     {/* Función para obtener las playlists */ }
     const getPlaylists = async (pageToken, playlists) => {
         let url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true";
+        let accessToken = localStorage.getItem("access_token");
+        if (!accessToken) throw new Error("No access token found");
+
         if (pageToken) url += "&pageToken=" + pageToken;
 
         const options = {
@@ -170,12 +167,7 @@ const PlaylistPanel = ({ accessToken, onProgressStart, onProgressStop, onPlaylis
     );
 };
 
-PlaylistPanel.propTypes = {
-    accessToken: PropTypes.string.isRequired,
-    onProgressStart: PropTypes.func.isRequired,
-    onProgressStop: PropTypes.func.isRequired,
-    onPlaylistSelected: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired
+PlayListSorter.propTypes = {    
 };
 
-export default PlaylistPanel;
+export default PlayListSorter;

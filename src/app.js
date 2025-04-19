@@ -1,5 +1,8 @@
 import React from "react"
 import { createRoot } from 'react-dom/client';
+import RoutesComponent from "./RoutesComponent"
+import { BrowserRouter, Routes, Route, useSearchParams, useLocation } from 'react-router';
+
 
 // Bootstrap needs jquery:
 // http://stackoverflow.com/questions/34120250/error-using-bootstrap-jquery-packages-in-es6-with-browserify
@@ -8,4 +11,4 @@ window.jQuery = window.$ = $
 require("bootstrap")
 
 const root = createRoot(document.getElementById("main"));
-root.render(<Routes />);
+root.render(<BrowserRouter basename='/deploy/youtube-tools/app/'><RoutesComponent /></BrowserRouter>);

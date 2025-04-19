@@ -1,7 +1,9 @@
 import React from "react";
 
-const ModalComponent = ({ show, onClose, title, items, handleFilterChange, setFilterItems, viewModeItems, setViewItems }) => {
+const Modal = ({ show, onClose, title, items, handleFilterChange, setFilterItems, viewModeItems, setViewItems }) => {
   return (
+    <>
+    <div className="prueba">Holaa</div>
     <div className={`modal fade ${show ? "show d-block" : "d-none"}`} tabIndex="-1">
       <div className="modal-lg modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div className="modal-content">
@@ -53,7 +55,8 @@ const ModalComponent = ({ show, onClose, title, items, handleFilterChange, setFi
         </div>
       </div>
     </div>
+    </>
   );
 };
 
-export default ModalComponent;
+export default Modal;
