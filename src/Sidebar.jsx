@@ -62,7 +62,6 @@ const Sidebar = (props) => {
 
 
 
-
     <div className="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
       <div className="col">
         <header className="d-flex flex-wrap justify-content-center py-3">
